@@ -1,0 +1,20 @@
+# Whisperモデル設定
+whisper_model: base          # 日本語対応モデル（tiny, base, small など）
+
+# 出力先ディレクトリ
+output_paths:
+  audio: output/audio
+  transcript: output/transcript
+  summary: output/summary
+
+# ログファイル出力先
+log_file: auto_memo.log
+
+# GPTモデルの優先順位（将来的なフォールバック考慮）
+gpt_model_priority:
+  - gpt-4
+  - gpt-3.5-turbo
+
+# UI設定（今後拡張予定）
+ui:
+  theme: light               # dark/light など

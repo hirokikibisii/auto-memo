@@ -1,0 +1,8 @@
+openai==1.97.1             # 最新（2025-07-22）
+torch==2.7.1               # 最新（2025-06-04）
+numpy==2.3.2               # 最新（2025-07-24）
+python-dotenv==1.1.1       # 最新（2025-06-24）
+sounddevice==0.5.2         # 最新（2025-05-16）
+ffmpeg-python==0.2.0       # 最新（2019, 更新なし）
+pyyaml==6.0.1              # config.yaml 読み込み用
+git+https://github.com/openai/whisper.git  # Whisper 最新版（main ブランチ）
