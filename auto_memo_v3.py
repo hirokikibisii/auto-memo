@@ -35,9 +35,10 @@ SUMMARY_DIR = config.get("summary_dir", "output/summary")
 WHISPER_MODEL = config.get("whisper_model", "base")
 LOG_FILE = config.get("log_file", "auto_memo.log")
 
-os.makedirs(AUDIO_DIR, exist_ok=True)
-os.makedirs(TRANSCRIPT_DIR, exist_ok=True)
-os.makedirs(SUMMARY_DIR, exist_ok=True)
+# 出力フォルダの起動時自動作成
+output_dirs = [AUDIO_DIR, TRANSCRIPT_DIR, SUMMARY_DIR]
+for d in output_dirs:
+    os.makedirs(d, exist_ok=True)
 
 logging.basicConfig(filename=LOG_FILE, level=logging.INFO, format='%(asctime)s - %(message)s')
 
@@ -72,13 +73,53 @@ def convert_to_mp3(wav_path):
         return None
 
 def call_openai_summary(text, api_key):
-    prompt = f"次の会話内容を要約してください：\n{text}"
+    prompt = """あなたは会議録や議事録の専門要約アシスタントです。与えられたテキストを分析し、以下の構造で分かりやすく要約してください。
+ 
+【重要な指針】
+- 会話が非構造的で文法が乱れている箇所は、文脈から意味を汲み取り適切に補完してください
+- 口語的な表現や不完全な文章も、意図を理解して整理してください
+- 情報が不明確な場合は「詳細不明」として明記してください
+- 箇条書きは簡潔で具体的に記載してください
+ 
+【要約構造】
+1. **会議の目的・背景**
+   - 会議の目的や話題の背景を簡潔に記載
+   - 不明な場合は「目的不明」と記載
+
+2. **参加者**
+
+3. **主要な議論内容**
+   - 重要なポイントを箇条書きで簡潔に記載
+   - 各項目は1-2行程度で要約
+
+4. **決定事項**
+   - 明確に決まったことを具体的に記載
+   - 決定者や承認者も可能な限り明記
+   - なければ「なし」と記載
+
+5. **未決事項**
+   - 今後の検討が必要な事項を記載
+   - 検討期限があれば併記
+   - なければ「なし」と記載
+
+6. **今後の対応・アクション項目**
+   - 担当者と具体的なアクションを記載
+   - 期限があれば併記
+   - 形式：「【担当者】アクション内容（期限）」
+   - なければ「なし」と記載
+
+7. **特記事項**
+   - 次回会議予定
+   - 重要な関係者の意見や懸念
+   - その他重要な情報
+   - なければ「なし」と記載"""
+
     client = OpenAI(api_key=api_key)
     for model in ["gpt-4", "gpt-3.5-turbo"]:
         try:
             response = client.chat.completions.create(
                 model=model,
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt + "\n" + text}]
             )
             return response.choices[0].message.content
         except Exception as e:

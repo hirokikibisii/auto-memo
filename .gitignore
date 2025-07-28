@@ -1,0 +1,7 @@
+.env
+auto_memo.log
+/build
+/dist
+/old
+/output
+/assets
